@@ -1,0 +1,116 @@
+"use client";
+
+import { useActionState } from "react";
+import type { CatalogCategory, CatalogProduct, CatalogProductPhoto } from "@/lib/supabase/types";
+import { saveProductFormAction, type ProductFormState } from "@/features/catalog/actions";
+import { Button } from "@/components/ui/button";
+import { SubmitButton } from "@/components/forms/submit-button";
+import { StatusBadge } from "@/components/ui/status-badge";
+import { ImageUploadField } from "@/components/media/image-upload-field";
+import { isCompatibleCategorySlug } from "@/lib/constants/catalog";
+import { formatCategoryName } from "@/lib/formatters/catalog";
+
+export function ProductForm({
+  product,
+  mainPhoto,
+  categories,
+  error,
+}: {
+  product?: CatalogProduct;
+  mainPhoto?: CatalogProductPhoto;
+  categories: CatalogCategory[];
+  error?: string;
+}) {
+  const initialState: ProductFormState = { error: error ? decodeURIComponent(error) : undefined };
+  const [state, formAction] = useActionState(saveProductFormAction, initialState);
+  const fields = state.fields;
+  const field = (name: keyof NonNullable<ProductFormState["fields"]>, fallback?: string | number | null) => fields?.[name] ?? String(fallback ?? "");
+  const selectedCategoryId = field("category_id", product?.category_id);
+  const selectedCategory = categories.find((category) => String(category.id) === selectedCategoryId);
+
+  return (
+    <form key={state.revision ?? 0} action={formAction} className="brand-surface rounded-lg p-6">
+      {product ? <input type="hidden" name="id" value={String(product.id)} /> : null}
+      {product?.slug ? <input type="hidden" name="slug" value={product.slug} /> : null}
+      {state.error ? <p className="mb-4 rounded-md border border-[color:var(--danger)]/45 bg-[color:var(--danger)]/10 p-3 text-sm text-[color:var(--danger)]">{state.error}</p> : null}
+      <div className="mb-6 flex items-start justify-between gap-4">
+        <div>
+          <h2 className="text-xl font-semibold">Ficha de producto</h2>
+          <p className="mt-1 text-sm text-[color:var(--muted)]">Captura lo básico primero. El panel crea el enlace interno por ti.</p>
+        </div>
+        {product ? <StatusBadge tone={product.is_active ? "active" : "hidden"}>{product.is_active ? "Visible" : "Oculto"}</StatusBadge> : <StatusBadge tone="hidden">Nuevo borrador</StatusBadge>}
+      </div>
+
+      <div className="grid gap-6 lg:grid-cols-2">
+        <ImageUploadField name="image_file" currentSrc={mainPhoto?.image_src} label="Imagen del producto" required={!product} />
+        <div>
+          <fieldset className="grid gap-4 md:grid-cols-2">
+            <legend className="sr-only">Datos principales</legend>
+            <label className="block">
+              <span className="mb-2 block text-sm font-semibold">Nombre del producto *</span>
+              <input name="name" defaultValue={field("name", product?.name)} className="field-control" placeholder="Ej. Carro taquero grande" required />
+            </label>
+            <label className="block">
+              <span className="mb-2 block text-sm font-semibold">Código o modelo *</span>
+              <input name="internal_code" defaultValue={field("internal_code", product?.internal_code)} className="field-control" placeholder="Ej. CT-120" required />
+            </label>
+            <label className="block md:col-span-2">
+              <span className="mb-2 block text-sm font-semibold">Categoría *</span>
+              <select name="category_id" defaultValue={selectedCategoryId} className="field-control" required>
+                <option value="">Selecciona categoría</option>
+                {categories.map((category) => (
+                  <option key={category.id} value={category.id}>
+                    {category.name || formatCategoryName(category.slug)}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </fieldset>
+
+          <fieldset className="mt-6 grid gap-4 border-t border-[color:var(--border)] pt-6 md:grid-cols-2">
+            <legend className="sr-only">Datos comerciales</legend>
+            <label className="block">
+              <span className="mb-2 block text-sm font-semibold">Precio</span>
+              <input name="price" defaultValue={field("price", product?.price)} className="field-control" />
+              <span className="mt-1 block text-xs text-[color:var(--muted)]">Si lo dejas vacío, la web mostrará precio a consultar.</span>
+            </label>
+            <label className="block">
+              <span className="mb-2 block text-sm font-semibold">Material</span>
+              <input name="material" defaultValue={field("material", product?.material)} className="field-control" />
+            </label>
+            <label className="block md:col-span-2">
+              <span className="mb-2 block text-sm font-semibold">Medidas</span>
+              <input name="measurements" defaultValue={field("measurements", product?.measurements)} className="field-control" />
+            </label>
+            <label className="block md:col-span-2">
+              <span className="mb-2 block text-sm font-semibold">Descripción</span>
+              <textarea name="description" defaultValue={field("description", product?.description)} rows={4} className="field-control" />
+            </label>
+            <label className="block md:col-span-2">
+              <span className="mb-2 block text-sm font-semibold">Observaciones para cotización</span>
+              <textarea name="additional_observations" defaultValue={field("additional_observations", product?.additional_observations)} rows={3} className="field-control" />
+            </label>
+          </fieldset>
+          {product ? (
+            <label className="mt-5 flex items-center gap-2 text-sm font-semibold">
+              <input type="checkbox" name="is_active" defaultChecked={fields ? fields.is_active === "on" : product.is_active} /> Visible en web
+            </label>
+          ) : null}
+          <div className="mt-5 flex flex-wrap items-center gap-3">
+            <SubmitButton pendingLabel={product ? "Guardando cambios" : "Creando producto"}>{product ? "Guardar cambios" : "Crear producto"}</SubmitButton>
+            <Button href="/dashboard/catalogo/productos" tone="quiet">Cancelar</Button>
+          </div>
+          <div className="mt-5 flex flex-wrap gap-2">
+            {selectedCategory ? (
+              <StatusBadge tone={isCompatibleCategorySlug(selectedCategory.slug) ? "active" : "danger"}>
+                {isCompatibleCategorySlug(selectedCategory.slug) ? "Esta categoría funciona en catálogo" : "Esta categoría requiere ajuste"}
+              </StatusBadge>
+            ) : (
+              <StatusBadge tone="warning">Selecciona categoría para poder publicar después</StatusBadge>
+            )}
+          </div>
+        </div>
+      </div>
+    </form>
+  );
+}
