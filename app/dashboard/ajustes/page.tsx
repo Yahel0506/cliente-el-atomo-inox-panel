@@ -20,6 +20,9 @@ export default function SettingsPage() {
             <p className="flex items-center justify-between gap-3">Conexión pública <StatusBadge tone={env.hasPublicConfig ? "active" : "danger"}>{env.hasPublicConfig ? "Lista" : "Falta"}</StatusBadge></p>
             <p className="flex items-center justify-between gap-3">Permisos de edición <StatusBadge tone={env.hasServiceRole ? "active" : "warning"}>{env.hasServiceRole ? "Listos" : "Revisar"}</StatusBadge></p>
             <p className="break-all text-[color:var(--muted)]">{env.url || "Sin URL configurada"}</p>
+            {env.missingPublicConfig.length ? (
+              <p className="text-[color:var(--danger)]">Falta: {env.missingPublicConfig.join(", ")}</p>
+            ) : null}
           </div>
         </section>
 
@@ -33,6 +36,7 @@ export default function SettingsPage() {
         <DisclosurePanel title="Datos para soporte técnico">
           <pre className="overflow-x-auto rounded-md bg-black/25 p-4 text-xs">{`NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
+SUPABASE_ANON_KEY= # alternativa server-side si no usas NEXT_PUBLIC_SUPABASE_ANON_KEY
 SUPABASE_SERVICE_ROLE_KEY=
 NEXT_PUBLIC_SITE_URL=
 ADMIN_REVALIDATE_SECRET=
