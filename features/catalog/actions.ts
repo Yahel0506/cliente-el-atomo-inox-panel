@@ -10,10 +10,11 @@ import { compressImageToWebp, isUploadedFile } from "@/features/media/processing
 import { buildStoragePath, MEDIA_BUCKETS, removePublicMedia, uploadPublicMedia } from "@/features/media/storage";
 import { getCatalogAdminData, getProductDiagnostics } from "./data";
 import { formatCategoryName } from "@/lib/formatters/catalog";
+import { translateErrorMessage } from "@/lib/formatters/errors";
 import { toPublicSlug } from "@/lib/formatters/slug";
 
 function fail(path: string, message: string): never {
-  redirect(`${path}?error=${encodeURIComponent(message)}`);
+  redirect(`${path}?error=${encodeURIComponent(translateErrorMessage(message))}`);
 }
 
 type PrivilegedClient = NonNullable<Awaited<ReturnType<typeof createPrivilegedClient>>>;
@@ -66,15 +67,16 @@ function getProductFormFields(formData: FormData): ProductFormFields {
 }
 
 function productFail(mode: "redirect" | "state", path: string, message: string, formData: FormData): ProductFormState | never {
+  const translatedMessage = translateErrorMessage(message);
   if (mode === "state") {
     return {
-      error: message,
+      error: translatedMessage,
       fields: getProductFormFields(formData),
       revision: Date.now(),
     };
   }
 
-  redirect(`${path}?error=${encodeURIComponent(message)}`);
+  redirect(`${path}?error=${encodeURIComponent(translatedMessage)}`);
 }
 
 function getOptionalFile(formData: FormData, key: string) {
@@ -114,7 +116,7 @@ async function saveMainProductImage(supabase: PrivilegedClient, productId: strin
 
   if (result.error) {
     await removePublicMedia(supabase, MEDIA_BUCKETS.productImages, publicUrl);
-    throw new Error(result.error.message);
+    throw new Error(translateErrorMessage(result.error.message));
   }
   await removePublicMedia(supabase, MEDIA_BUCKETS.productImages, existing.data?.image_src);
 }
@@ -138,7 +140,10 @@ export async function toggleProductAction(formData: FormData) {
     }
   }
 
-  const { error } = await supabase.from("catalog_products").update({ is_active: !isActive }).eq("id", id);
+  const { error } = await supabase
+    .from("catalog_products")
+    .update({ is_active: !isActive, publication_status: isActive ? "draft" : "published" })
+    .eq("id", id);
   if (error) fail(path, error.message);
   revalidatePath(path);
 }
@@ -250,7 +255,12 @@ async function saveProduct(formData: FormData, mode: "redirect" | "state"): Prom
     const { error } = await supabase.from("catalog_products").update(productPayload).eq("id", productId);
     if (error) return productFail(mode, path, error.message, formData);
   } else {
-    const insertPayload = { ...productPayload, display_order: productPayload.display_order ?? 0, publication_status: productPayload.is_active ? "published" : "draft" };
+    const insertPayload = {
+      ...productPayload,
+      display_order: productPayload.display_order ?? 0,
+      publication_status: "draft",
+      is_active: false,
+    };
     const result = await supabase.from("catalog_products").insert(insertPayload).select("id").single();
 
     if (result.error) return productFail(mode, path, result.error.message, formData);
@@ -267,6 +277,18 @@ async function saveProduct(formData: FormData, mode: "redirect" | "state"): Prom
         return productFail(mode, path, message, formData);
       }
       return productFail(mode, `/dashboard/catalogo/productos/${nextId}`, message, formData);
+    }
+  }
+
+  if (!productId && nextId && productPayload.is_active) {
+    const publish = await supabase
+      .from("catalog_products")
+      .update({ is_active: true, publication_status: "published" })
+      .eq("id", nextId);
+
+    if (publish.error) {
+      await supabase.from("catalog_products").delete().eq("id", nextId);
+      return productFail(mode, path, publish.error.message, formData);
     }
   }
 

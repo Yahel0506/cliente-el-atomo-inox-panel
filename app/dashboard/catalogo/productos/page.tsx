@@ -4,6 +4,7 @@ import { PageHeader } from "@/components/layout/page-header";
 import { DataTable } from "@/components/tables/data-table";
 import { Button } from "@/components/ui/button";
 import { ConfirmDeleteButton } from "@/components/forms/confirm-delete-button";
+import { ErrorMessage } from "@/components/feedback/error-message";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { EmptyState } from "@/components/feedback/states";
 import { formatPrice } from "@/lib/formatters/business";
@@ -19,7 +20,10 @@ export default async function ProductsPage({
   const params = await searchParams;
   const data = await getCatalogAdminData();
   const active = data.products.filter((product) => product.is_active).length;
-  const incomplete = data.products.filter((product) => getProductDiagnostics(product, data).warnings.length > 0).length;
+  const incomplete = data.products.filter((product) => {
+    const diagnostics = getProductDiagnostics(product, data);
+    return diagnostics.warnings.length > 0 || diagnostics.advisoryWarnings.length > 0;
+  }).length;
 
   if (!data.products.length) {
     return (
@@ -51,11 +55,7 @@ export default async function ProductsPage({
         ))}
       </section>
 
-      {params?.error ? (
-        <p className="mb-4 rounded-md border border-[color:var(--danger)]/45 bg-[color:var(--danger)]/10 p-3 text-sm text-[color:var(--danger)]">
-          {decodeURIComponent(params.error)}
-        </p>
-      ) : null}
+      <ErrorMessage error={params?.error} />
       {params?.deleted ? (
         <p className="mb-4 rounded-md border border-[color:var(--success)]/45 bg-[color:var(--success)]/10 p-3 text-sm text-[color:var(--success)]">
           Producto eliminado del catálogo.
@@ -66,6 +66,7 @@ export default async function ProductsPage({
         columns={["Foto", "Producto", "Categoría", "Precio", "Estado", "Fotos", "Sucursales", "Revisión", "Acción"]}
         rows={data.products.map((product) => {
           const diagnostics = getProductDiagnostics(product, data);
+          const reviewWarnings = [...diagnostics.warnings, ...diagnostics.advisoryWarnings];
           return [
             diagnostics.mainPhoto ? (
               <div className="relative h-14 w-16 overflow-hidden rounded-xl bg-[color:var(--surface-soft)] shadow-[var(--shadow-control)]">
@@ -98,9 +99,9 @@ export default async function ProductsPage({
             </StatusBadge>,
             <span key="photos">{diagnostics.productPhotos.length}</span>,
             <span key="branches">{diagnostics.activeBranches.length}</span>,
-            diagnostics.warnings.length ? (
+            reviewWarnings.length ? (
               <div key="warn" className="flex flex-wrap gap-1">
-                {diagnostics.warnings.map((warning) => (
+                {reviewWarnings.map((warning) => (
                   <StatusBadge key={warning} tone="warning">
                     {warning}
                   </StatusBadge>

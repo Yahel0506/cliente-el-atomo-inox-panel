@@ -99,6 +99,7 @@ export default async function DashboardPage() {
   const activeProducts = catalog.products.filter((product) => product.is_active).length;
   const hiddenProducts = totalProducts - activeProducts;
   const productsWithPhoto = diagnostics.filter((item) => item.productPhotos.length > 0).length;
+  const productsWithValidCategory = diagnostics.filter((item) => item.category && item.categoryCompatible).length;
   const productsWithBranch = diagnostics.filter((item) => item.activeBranches.length > 0).length;
   const publishableProducts = diagnostics.filter((item) => item.publishable).length;
   const activeBranches = business.branches.filter((branch) => branch.is_active).length;
@@ -129,7 +130,7 @@ export default async function DashboardPage() {
         <MetricCard
           label="Productos publicables"
           value={`${publishableProducts}/${totalProducts}`}
-          detail="Fichas con categoría, imagen y sucursal activa listas."
+          detail="Fichas con nombre, modelo, categoría e imagen listas."
           href="/dashboard/catalogo/productos"
           icon={<Package size={21} weight="fill" aria-hidden />}
           color="#f99a00"
@@ -209,7 +210,8 @@ export default async function DashboardPage() {
                 Salud para publicación
               </h3>
               <HealthRow label="Con imagen" value={productsWithPhoto} total={totalProducts} color="var(--info)" />
-              <HealthRow label="Con sucursal" value={productsWithBranch} total={totalProducts} color="var(--success)" />
+              <HealthRow label="Con categoría válida" value={productsWithValidCategory} total={totalProducts} color="var(--success)" />
+              <HealthRow label="Con sucursal disponible" value={productsWithBranch} total={totalProducts} color={productsWithBranch === totalProducts ? "var(--success)" : "var(--accent)"} />
               <HealthRow label="Publicables" value={publishableProducts} total={totalProducts} color="var(--accent)" />
             </div>
             <div className="space-y-4 rounded-[1.15rem] bg-[color:var(--surface)] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">

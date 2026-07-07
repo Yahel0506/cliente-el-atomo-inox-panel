@@ -31,20 +31,20 @@ export function getQualitySummary(catalog: CatalogAdminData, business: BusinessA
           severity: "danger",
         }
       : null,
+    productsWithoutBranch.length
+      ? {
+          title: "Productos sin sucursal",
+          detail: `${productsWithoutBranch.length} producto(s) no tienen disponibilidad asociada. No bloquea publicación, pero conviene revisarlo.`,
+          href: "/dashboard/catalogo/productos?filtro=sin-sucursal",
+          severity: "warning",
+        }
+      : null,
     incompatibleCategories.length
       ? {
           title: "Categorías por revisar",
           detail: `${incompatibleCategories.length} categoría(s) requieren ajuste antes de mostrarse bien en el catálogo.`,
           href: "/dashboard/catalogo/categorias",
           severity: "danger",
-        }
-      : null,
-    productsWithoutBranch.length
-      ? {
-          title: "Productos sin sucursal",
-          detail: `${productsWithoutBranch.length} ficha(s) mostrarán "Consultar" en sucursales.`,
-          href: "/dashboard/catalogo/productos?filtro=sin-sucursal",
-          severity: "warning",
         }
       : null,
     activeContacts.length !== 1

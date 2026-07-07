@@ -5,6 +5,7 @@ import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
 import { SubmitButton } from "@/components/forms/submit-button";
 import { ConfirmDeleteButton } from "@/components/forms/confirm-delete-button";
+import { ErrorMessage } from "@/components/feedback/error-message";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { ModalLayer } from "@/components/layout/modal-layer";
 import { getBusinessAdminData } from "@/features/business/data";
@@ -131,7 +132,7 @@ export default async function WorksPage({ searchParams }: { searchParams?: Promi
   return (
     <>
       <PageHeader title="Trabajos" help="Administra fotos y videos que aparecen en la sección de trabajos del sitio público." />
-      {params?.error ? <p className="mb-4 rounded-md border border-[color:var(--danger)]/45 bg-[color:var(--danger)]/10 p-3 text-sm text-[color:var(--danger)]">{decodeURIComponent(params.error)}</p> : null}
+      <ErrorMessage error={params?.error} />
       {params?.saved ? <p className="mb-4 rounded-md border border-[color:var(--success)]/45 bg-[color:var(--success)]/10 p-3 text-sm text-[color:var(--success)]">Archivo guardado. Puede tardar hasta 5 minutos en verse en el sitio público.</p> : null}
 
       <div className="grid min-w-0 gap-5">
@@ -151,7 +152,7 @@ export default async function WorksPage({ searchParams }: { searchParams?: Promi
               <Button href="/dashboard/negocio/trabajos" tone="quiet">Cerrar</Button>
             </div>
 
-            <form action={saveWorkMediaAction} className="grid gap-4">
+            <form action={saveWorkMediaAction} encType="multipart/form-data" className="grid gap-4">
               <input type="hidden" name="kind" value={modalKind} />
               {selected ? <input type="hidden" name="id" value={selected.id} /> : null}
               <label className="block">

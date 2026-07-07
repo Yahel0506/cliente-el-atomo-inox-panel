@@ -58,7 +58,7 @@ export const categorySchema = z.object({
 export const productSchema = z.object({
   id: z.union([z.coerce.number(), z.string()]).optional(),
   name: requiredString,
-  category_id: z.union([z.coerce.number(), z.string()]),
+  category_id: requiredString,
   description: z.string().trim().nullable().optional(),
   price: z
     .string()

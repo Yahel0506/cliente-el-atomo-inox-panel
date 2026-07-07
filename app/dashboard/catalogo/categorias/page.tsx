@@ -1,5 +1,6 @@
 import { PageHeader } from "@/components/layout/page-header";
 import { DisclosurePanel } from "@/components/disclosure/disclosure-panel";
+import { ErrorMessage } from "@/components/feedback/error-message";
 import { DataTable } from "@/components/tables/data-table";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { COMPATIBLE_CATEGORY_SLUGS, isCompatibleCategorySlug } from "@/lib/constants/catalog";
@@ -17,7 +18,7 @@ export default async function CategoriesPage({ searchParams }: { searchParams?: 
         help="Agrupan los productos para que el cliente pueda encontrarlos fácil en el catálogo."
       />
 
-      {params?.error ? <p className="mb-4 rounded-md border border-[color:var(--danger)]/45 bg-[color:var(--danger)]/10 p-3 text-sm text-[color:var(--danger)]">{decodeURIComponent(params.error)}</p> : null}
+      <ErrorMessage error={params?.error} />
       {params?.saved ? <p className="mb-4 rounded-md border border-[color:var(--success)]/45 bg-[color:var(--success)]/10 p-3 text-sm text-[color:var(--success)]">Categoría guardada. Puede tardar hasta 5 minutos en verse en la web pública.</p> : null}
 
       <div className="mb-6">

@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { signInAction } from "@/features/auth/actions";
 import { BrandLogo } from "@/components/brand/brand-logo";
+import { ErrorMessage } from "@/components/feedback/error-message";
 import { getAdminSession } from "@/lib/permissions/admin";
 import { AuthSubmitButton } from "@/components/forms/auth-submit-button";
 
@@ -21,11 +22,7 @@ export default async function LoginPage({
           <BrandLogo />
         </div>
 
-        {error ? (
-          <p className="mb-4 rounded-md border border-[color:var(--danger)]/45 bg-[color:var(--danger)]/10 p-3 text-sm text-[color:var(--danger)]">
-            {error === "config" ? "Falta configurar la conexión del panel." : decodeURIComponent(error)}
-          </p>
-        ) : null}
+        <ErrorMessage error={error === "config" ? "Falta configurar la conexión del panel." : error} />
 
         <form action={signInAction} className="space-y-4">
           <label className="block">

@@ -7,11 +7,12 @@ import { createPrivilegedClient } from "@/lib/supabase/admin";
 import { branchSchema, contactSchema } from "@/features/validation/schemas";
 import { compressImageToWebp, compressVideoToWebm, isUploadedFile } from "@/features/media/processing";
 import { buildStoragePath, MEDIA_BUCKETS, removePublicMedia, uploadPublicMedia } from "@/features/media/storage";
+import { translateErrorMessage } from "@/lib/formatters/errors";
 import { toPublicSlug } from "@/lib/formatters/slug";
 import type { BusinessWorkMediaRow } from "@/lib/supabase/types";
 
 function fail(path: string, message: string): never {
-  redirect(`${path}?error=${encodeURIComponent(message)}`);
+  redirect(`${path}?error=${encodeURIComponent(translateErrorMessage(message))}`);
 }
 
 type PrivilegedClient = NonNullable<Awaited<ReturnType<typeof createPrivilegedClient>>>;
@@ -74,7 +75,7 @@ async function countWorkMediaRows(supabase: PrivilegedClient, kind: WorkMediaKin
         : supabase.from("business_work_process_videos").select("id", { count: "exact", head: true });
 
   const { count, error } = await query;
-  if (error) throw new Error(error.message);
+  if (error) throw new Error(translateErrorMessage(error.message));
   return count ?? 0;
 }
 
@@ -108,7 +109,7 @@ async function normalizeProcessVideos(supabase: PrivilegedClient) {
     .select("id")
     .order("display_order", { ascending: true })
     .order("id", { ascending: true });
-  if (error) throw new Error(error.message);
+  if (error) throw new Error(translateErrorMessage(error.message));
 
   const activeIds = (data ?? []).slice(0, 2).map((row) => row.id);
   if (activeIds.length) {
@@ -289,7 +290,7 @@ export async function saveWorkMediaAction(formData: FormData) {
         }
       }
       const { error } = await updateWorkMedia(supabase, kind, id, payload);
-      if (error) throw new Error(error.message);
+      if (error) throw new Error(translateErrorMessage(error.message));
       databaseWritten = true;
       await removePublicMedia(supabase, previousBucket, previousUrl);
     } else {
@@ -298,7 +299,7 @@ export async function saveWorkMediaAction(formData: FormData) {
         if (count >= 2) throw new Error("Los videos de proceso están limitados a dos elementos.");
       }
       const { error } = await insertWorkMedia(supabase, kind, payload);
-      if (error) throw new Error(error.message);
+      if (error) throw new Error(translateErrorMessage(error.message));
       databaseWritten = true;
     }
 
@@ -331,7 +332,7 @@ export async function deleteWorkMediaAction(formData: FormData) {
     const previous = await getWorkMediaSource(supabase, kind, id);
     const publicUrl = previous.data ? ("image_src" in previous.data ? previous.data.image_src : previous.data.video_src) : undefined;
     const { error } = await deleteWorkMediaRow(supabase, kind, id);
-    if (error) throw new Error(error.message);
+    if (error) throw new Error(translateErrorMessage(error.message));
     await removePublicMedia(supabase, kind === "result-image" ? MEDIA_BUCKETS.workResultImages : MEDIA_BUCKETS.workVideos, publicUrl);
   } catch (error) {
     fail(path, error instanceof Error ? error.message : "No se pudo eliminar el archivo.");

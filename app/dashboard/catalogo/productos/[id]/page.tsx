@@ -34,17 +34,19 @@ export default async function EditProductPage({
             <h2 className="mb-3 font-black">Checklist de publicación</h2>
             <div className="space-y-2">
               {[
-                ["Nombre", Boolean(product.name)],
-                ["Código/modelo", Boolean(product.internal_code)],
-                ["Categoría activa", Boolean(diagnostics.category?.is_active)],
-                ["Categoría funciona en catálogo", diagnostics.categoryCompatible],
-                ["Foto principal", Boolean(diagnostics.mainPhoto)],
-                ["Imagen compatible", diagnostics.imageOk],
-                ["Sucursal activa", diagnostics.activeBranches.length > 0],
-              ].map(([label, ok]) => (
-                <p key={String(label)} className="flex items-center justify-between gap-2 text-sm">
-                  {label}
-                  <StatusBadge tone={ok ? "active" : "danger"}>{ok ? "Listo" : "Falta"}</StatusBadge>
+                { label: "Nombre", ok: Boolean(product.name), optional: false },
+                { label: "Código/modelo", ok: Boolean(product.internal_code), optional: false },
+                { label: "Categoría activa", ok: Boolean(diagnostics.category?.is_active), optional: false },
+                { label: "Categoría funciona en catálogo", ok: diagnostics.categoryCompatible, optional: false },
+                { label: "Foto principal", ok: Boolean(diagnostics.mainPhoto), optional: false },
+                { label: "Imagen compatible", ok: diagnostics.imageOk, optional: false },
+                { label: "Sucursal disponible", ok: diagnostics.activeBranches.length > 0, optional: true },
+              ].map((item) => (
+                <p key={item.label} className="flex items-center justify-between gap-2 text-sm">
+                  {item.label}
+                  <StatusBadge tone={item.ok ? "active" : item.optional ? "warning" : "danger"}>
+                    {item.ok ? "Listo" : item.optional ? "Revisar" : "Falta"}
+                  </StatusBadge>
                 </p>
               ))}
             </div>
@@ -92,7 +94,7 @@ export default async function EditProductPage({
                 })}
               </div>
             ) : (
-              <p className="text-sm">Agrega una sucursal activa para indicar dónde se puede consultar este producto.</p>
+              <p className="text-sm">Opcional. Puedes relacionar sucursales para mostrar disponibilidad específica.</p>
             )}
           </DisclosurePanel>
         </aside>

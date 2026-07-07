@@ -70,7 +70,9 @@ export function getProductDiagnostics(product: CatalogProduct, data: CatalogAdmi
     category && !categoryCompatible ? "Categoría requiere ajuste" : null,
     productPhotos.length === 0 ? "Sin foto" : null,
     mainPhoto && !imageOk ? "Foto incompatible" : null,
-    activeBranches.length === 0 ? "Sin sucursal activa" : null,
+  ].filter(Boolean) as string[];
+  const advisoryWarnings = [
+    activeBranches.length === 0 ? "Sin sucursal disponible" : null,
   ].filter(Boolean) as string[];
 
   return {
@@ -83,5 +85,6 @@ export function getProductDiagnostics(product: CatalogProduct, data: CatalogAdmi
     categoryCompatible,
     publishable: warnings.length === 0,
     warnings,
+    advisoryWarnings,
   };
 }

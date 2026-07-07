@@ -13,7 +13,7 @@ export default async function NewProductPage({ searchParams }: { searchParams?: 
     <>
       <PageHeader
         title="Nuevo producto"
-        help="Los productos nuevos se guardan ocultos por defecto. Actívalos cuando tengan foto, categoría y datos completos."
+        help="Los productos nuevos se guardan visibles por defecto, siempre que tengan foto, categoría y datos completos."
         action={<Button href="/dashboard/catalogo/productos" tone="quiet">Volver</Button>}
       />
       {params?.prepared ? (

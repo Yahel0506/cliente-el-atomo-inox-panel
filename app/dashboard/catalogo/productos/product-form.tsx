@@ -4,6 +4,7 @@ import { useActionState, useMemo, useState } from "react";
 import type { CatalogCategory, CatalogProduct, CatalogProductPhoto } from "@/lib/supabase/types";
 import { saveProductFormAction, type ProductFormState } from "@/features/catalog/actions";
 import { Button } from "@/components/ui/button";
+import { decodeErrorParam } from "@/components/feedback/error-message";
 import { SubmitButton } from "@/components/forms/submit-button";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { ImageUploadField } from "@/components/media/image-upload-field";
@@ -24,7 +25,7 @@ export function ProductForm({
   categories: CatalogCategory[];
   error?: string;
 }) {
-  const initialState: ProductFormState = { error: error ? decodeURIComponent(error) : undefined };
+  const initialState: ProductFormState = { error: decodeErrorParam(error) || undefined };
   const [state, formAction] = useActionState(saveProductFormAction, initialState);
   const fields = state.fields;
   const field = (name: keyof NonNullable<ProductFormState["fields"]>, fallback?: string | number | null) => fields?.[name] ?? String(fallback ?? "");
@@ -42,6 +43,7 @@ export function ProductForm({
   return (
     <form
       action={formAction}
+      encType="multipart/form-data"
       className="brand-surface rounded-lg p-6"
       onSubmit={(event) => {
         if (priceHasInvalidCharacters) {
@@ -52,7 +54,6 @@ export function ProductForm({
     >
       {product ? <input type="hidden" name="id" value={String(product.id)} /> : null}
       {product?.slug ? <input type="hidden" name="slug" value={product.slug} /> : null}
-      {state.error ? <p className="mb-4 rounded-md border border-[color:var(--danger)]/45 bg-[color:var(--danger)]/10 p-3 text-sm text-[color:var(--danger)]">{state.error}</p> : null}
       <div className="mb-6 flex items-start justify-between gap-4">
         <div>
           <h2 className="text-xl font-semibold">Ficha de producto</h2>
@@ -135,6 +136,7 @@ export function ProductForm({
           <label className="mt-5 flex items-center gap-2 text-sm font-semibold">
             <input type="checkbox" name="is_active" defaultChecked={fields ? fields.is_active === "on" : (product?.is_active ?? true)} /> Visible en web
           </label>
+          {state.error ? <p className="mt-5 rounded-md border border-[color:var(--danger)]/45 bg-[color:var(--danger)]/10 p-3 text-sm text-[color:var(--danger)]">{state.error}</p> : null}
           <div className="mt-5 flex flex-wrap items-center gap-3">
             <SubmitButton pendingLabel={product ? "Guardando cambios" : "Creando producto"}>{product ? "Guardar cambios" : "Crear producto"}</SubmitButton>
             <Button href="/dashboard/catalogo/productos" tone="quiet">Cancelar</Button>

@@ -4,6 +4,7 @@ import { PageHeader } from "@/components/layout/page-header";
 import { DataTable } from "@/components/tables/data-table";
 import { Button } from "@/components/ui/button";
 import { ConfirmDeleteButton } from "@/components/forms/confirm-delete-button";
+import { ErrorMessage } from "@/components/feedback/error-message";
 import { SubmitButton } from "@/components/forms/submit-button";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { ImageUploadField } from "@/components/media/image-upload-field";
@@ -25,7 +26,7 @@ export default async function BranchesPage({ searchParams }: { searchParams?: Pr
         help="Administra direcciones, teléfonos, mapa y fachada de cada punto de venta."
         action={<Button href="/dashboard/negocio/sucursales?new=1" tone="primary" iconLeft={<Plus size={16} weight="bold" aria-hidden />}>Nueva sucursal</Button>}
       />
-      {params?.error ? <p className="mb-4 rounded-md border border-[color:var(--danger)]/45 bg-[color:var(--danger)]/10 p-3 text-sm text-[color:var(--danger)]">{decodeURIComponent(params.error)}</p> : null}
+      <ErrorMessage error={params?.error} />
       {params?.saved ? <p className="mb-4 rounded-md border border-[color:var(--success)]/45 bg-[color:var(--success)]/10 p-3 text-sm text-[color:var(--success)]">Sucursal guardada. Puede tardar hasta 5 minutos en verse en la web pública.</p> : null}
       {params?.deleted ? <p className="mb-4 rounded-md border border-[color:var(--success)]/45 bg-[color:var(--success)]/10 p-3 text-sm text-[color:var(--success)]">Sucursal eliminada.</p> : null}
 
@@ -71,7 +72,7 @@ export default async function BranchesPage({ searchParams }: { searchParams?: Pr
 
       {showModal ? (
         <ModalLayer>
-          <form action={saveBranchAction} className="max-h-[92vh] w-full max-w-5xl overflow-auto rounded-[1.5rem] bg-[color:var(--surface)] p-6 shadow-[var(--shadow-soft)]">
+          <form action={saveBranchAction} encType="multipart/form-data" className="max-h-[92vh] w-full max-w-5xl overflow-auto rounded-[1.5rem] bg-[color:var(--surface)] p-6 shadow-[var(--shadow-soft)]">
             <div className="mb-5 flex items-start justify-between gap-4">
               <div>
                 <h2 className="text-xl font-semibold">{editingBranch ? "Editar sucursal" : "Nueva sucursal"}</h2>

@@ -1,5 +1,7 @@
 import "server-only";
 
+import { translateErrorMessage } from "@/lib/formatters/errors";
+
 import { randomUUID } from "crypto";
 import type { createPrivilegedClient } from "@/lib/supabase/admin";
 
@@ -43,7 +45,7 @@ export async function uploadPublicMedia({
     upsert: false,
   });
 
-  if (error) throw new Error(error.message);
+  if (error) throw new Error(translateErrorMessage(error.message, "No se pudo guardar el archivo en Storage."));
 
   return supabase.storage.from(bucket).getPublicUrl(path).data.publicUrl;
 }

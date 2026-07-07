@@ -10,6 +10,7 @@ import {
 } from "@phosphor-icons/react/dist/ssr";
 import { PageHeader } from "@/components/layout/page-header";
 import { InfoToggletip } from "@/components/disclosure/info-toggletip";
+import { ErrorMessage } from "@/components/feedback/error-message";
 import { SubmitButton } from "@/components/forms/submit-button";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { formatPhoneLabel, toPhoneHref, toWhatsappHref } from "@/lib/formatters/business";
@@ -62,7 +63,7 @@ export default async function ContactPage({ searchParams }: { searchParams?: Pro
           Hay {activeCount} contactos principales activos. Guarda esta pantalla para dejar uno solo.
         </p>
       ) : null}
-      {params?.error ? <p className="mb-4 rounded-md border border-[color:var(--danger)]/45 bg-[color:var(--danger)]/10 p-3 text-sm text-[color:var(--danger)]">{decodeURIComponent(params.error)}</p> : null}
+      <ErrorMessage error={params?.error} />
       {params?.saved ? <p className="mb-4 rounded-md border border-[color:var(--success)]/45 bg-[color:var(--success)]/10 p-3 text-sm text-[color:var(--success)]">Cambios guardados. Pueden tardar hasta 5 minutos en verse en el sitio público.</p> : null}
 
       <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
