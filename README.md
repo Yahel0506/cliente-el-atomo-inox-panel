@@ -1,36 +1,61 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Panel administrativo El Atomo Inox
 
-## Getting Started
+CMS interno en Next.js App Router para administrar datos que la web publica ya consume desde Supabase.
 
-First, run the development server:
+## Comandos
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm run lint
+npx tsc --noEmit
+npm run build
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+`npm run dev` usa webpack porque Turbopack dev mostro error de manifest en este entorno. El build de produccion usa Next normal y pasa limpio.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Variables
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```env
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
+NEXT_PUBLIC_SITE_URL=
+ADMIN_REVALIDATE_SECRET=
+WEB_REVALIDATE_URL=
+```
 
-## Learn More
+`SUPABASE_SERVICE_ROLE_KEY` solo se usa en servidor. Si no se configura, el panel depende de RLS con usuario autenticado.
 
-To learn more about Next.js, take a look at the following resources:
+## Rutas
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- `/login`
+- `/dashboard`
+- `/dashboard/catalogo/productos`
+- `/dashboard/catalogo/productos/nuevo`
+- `/dashboard/catalogo/productos/[id]`
+- `/dashboard/catalogo/categorias`
+- `/dashboard/negocio/contacto`
+- `/dashboard/negocio/sucursales`
+- `/dashboard/negocio/trabajos`
+- `/dashboard/ajustes`
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Tablas administradas
 
-## Deploy on Vercel
+- `business_contact_info`
+- `business_branches`
+- `business_work_process_videos`
+- `business_work_result_videos`
+- `business_work_result_images`
+- `catalog_categories`
+- `catalog_products`
+- `catalog_product_photos` lectura/checklist
+- `catalog_product_recommended_uses` lectura/checklist
+- `catalog_product_branches` lectura/checklist
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Pendientes reales
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Subida directa a Supabase Storage con bucket/policies finales.
+- Reordenamiento drag and drop; hoy queda preparado por `display_order`.
+- Edicion completa de fotos/usos/sucursales dentro del producto.
+- Revalidacion manual de web publica cuando exista endpoint en `cliente-el-atomo-inox-web`.
+- Migrar categorias visuales de la web a Supabase si se quieren slugs nuevos visibles.
