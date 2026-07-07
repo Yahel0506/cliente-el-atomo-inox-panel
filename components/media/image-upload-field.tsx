@@ -46,7 +46,7 @@ export function ImageUploadField({
           name={name}
           accept="image/*"
           className="sr-only"
-          required={required && !currentSrc}
+          required={required && !src}
           onChange={(event) => {
             const file = event.currentTarget.files?.[0];
             if (!file) return;
@@ -56,7 +56,7 @@ export function ImageUploadField({
           aria-label={label}
         />
       </label>
-      {required && !currentSrc ? <p className="text-xs font-semibold text-[color:var(--danger)]">La imagen es obligatoria para crear el producto.</p> : null}
+      {required && !src ? <p className="text-xs font-semibold text-[color:var(--danger)]">La imagen es obligatoria para crear el producto.</p> : null}
     </div>
   );
 }

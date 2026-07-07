@@ -6,7 +6,7 @@ import { COMPATIBLE_CATEGORY_SLUGS, isCompatibleCategorySlug } from "@/lib/const
 import { requireAdmin } from "@/lib/permissions/admin";
 import { createPrivilegedClient } from "@/lib/supabase/admin";
 import { categorySchema, productSchema } from "@/features/validation/schemas";
-import { compressImageToWebp } from "@/features/media/processing";
+import { compressImageToWebp, isUploadedFile } from "@/features/media/processing";
 import { buildStoragePath, MEDIA_BUCKETS, removePublicMedia, uploadPublicMedia } from "@/features/media/storage";
 import { getCatalogAdminData, getProductDiagnostics } from "./data";
 import { formatCategoryName } from "@/lib/formatters/catalog";
@@ -79,7 +79,7 @@ function productFail(mode: "redirect" | "state", path: string, message: string, 
 
 function getOptionalFile(formData: FormData, key: string) {
   const file = formData.get(key);
-  return file instanceof File && file.size > 0 ? file : null;
+  return isUploadedFile(file) ? file : null;
 }
 
 async function saveMainProductImage(supabase: PrivilegedClient, productId: string | number, file: File, altText: string) {

@@ -13,8 +13,20 @@ const MAX_IMAGE_BYTES = 1024 * 1024;
 const MAX_VIDEO_BYTES = 10 * 1024 * 1024;
 const MAX_VIDEO_SECONDS = 60;
 
+export function isUploadedFile(file: FormDataEntryValue | null): file is File {
+  return (
+    typeof file === "object" &&
+    file !== null &&
+    "size" in file &&
+    typeof file.size === "number" &&
+    file.size > 0 &&
+    "arrayBuffer" in file &&
+    typeof file.arrayBuffer === "function"
+  );
+}
+
 function assertUploadedFile(file: FormDataEntryValue | null, label: string): File {
-  if (!(file instanceof File) || file.size === 0) {
+  if (!isUploadedFile(file)) {
     throw new Error(`Selecciona ${label}.`);
   }
   return file;

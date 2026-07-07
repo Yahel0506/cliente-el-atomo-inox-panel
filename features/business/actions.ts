@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/permissions/admin";
 import { createPrivilegedClient } from "@/lib/supabase/admin";
 import { branchSchema, contactSchema } from "@/features/validation/schemas";
-import { compressImageToWebp, compressVideoToWebm } from "@/features/media/processing";
+import { compressImageToWebp, compressVideoToWebm, isUploadedFile } from "@/features/media/processing";
 import { buildStoragePath, MEDIA_BUCKETS, removePublicMedia, uploadPublicMedia } from "@/features/media/storage";
 import { toPublicSlug } from "@/lib/formatters/slug";
 import type { BusinessWorkMediaRow } from "@/lib/supabase/types";
@@ -19,7 +19,7 @@ type WorkMediaKind = "process" | "result-video" | "result-image";
 
 function getOptionalFile(formData: FormData, key: string) {
   const file = formData.get(key);
-  return file instanceof File && file.size > 0 ? file : null;
+  return isUploadedFile(file) ? file : null;
 }
 
 async function uploadBranchImage(supabase: PrivilegedClient, file: File, branchSlug: string) {
