@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useMemo, useState } from "react";
 import type { CatalogCategory, CatalogProduct, CatalogProductPhoto } from "@/lib/supabase/types";
 import { saveProductFormAction, type ProductFormState } from "@/features/catalog/actions";
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,9 @@ import { StatusBadge } from "@/components/ui/status-badge";
 import { ImageUploadField } from "@/components/media/image-upload-field";
 import { isCompatibleCategorySlug } from "@/lib/constants/catalog";
 import { formatCategoryName } from "@/lib/formatters/catalog";
+
+const DEFAULT_MATERIAL = "Acero inoxidable";
+const OTHER_MATERIAL = "__other__";
 
 export function ProductForm({
   product,
@@ -27,9 +30,26 @@ export function ProductForm({
   const field = (name: keyof NonNullable<ProductFormState["fields"]>, fallback?: string | number | null) => fields?.[name] ?? String(fallback ?? "");
   const selectedCategoryId = field("category_id", product?.category_id);
   const selectedCategory = categories.find((category) => String(category.id) === selectedCategoryId);
+  const initialPrice = field("price", product?.price);
+  const [price, setPrice] = useState(initialPrice);
+  const priceHasInvalidCharacters = /\D/.test(price);
+  const initialMaterial = field("material", product?.material) || DEFAULT_MATERIAL;
+  const initialMaterialMode = useMemo(() => (initialMaterial === DEFAULT_MATERIAL ? DEFAULT_MATERIAL : OTHER_MATERIAL), [initialMaterial]);
+  const [materialMode, setMaterialMode] = useState(initialMaterialMode);
+  const [customMaterial, setCustomMaterial] = useState(initialMaterial === DEFAULT_MATERIAL ? "" : initialMaterial);
+  const materialValue = materialMode === DEFAULT_MATERIAL ? DEFAULT_MATERIAL : customMaterial;
 
   return (
-    <form key={state.revision ?? 0} action={formAction} className="brand-surface rounded-lg p-6">
+    <form
+      action={formAction}
+      className="brand-surface rounded-lg p-6"
+      onSubmit={(event) => {
+        if (priceHasInvalidCharacters) {
+          event.preventDefault();
+          event.currentTarget.querySelector<HTMLInputElement>('input[name="price"]')?.focus();
+        }
+      }}
+    >
       {product ? <input type="hidden" name="id" value={String(product.id)} /> : null}
       {product?.slug ? <input type="hidden" name="slug" value={product.slug} /> : null}
       {state.error ? <p className="mb-4 rounded-md border border-[color:var(--danger)]/45 bg-[color:var(--danger)]/10 p-3 text-sm text-[color:var(--danger)]">{state.error}</p> : null}
@@ -38,7 +58,7 @@ export function ProductForm({
           <h2 className="text-xl font-semibold">Ficha de producto</h2>
           <p className="mt-1 text-sm text-[color:var(--muted)]">Captura lo básico primero. El panel crea el enlace interno por ti.</p>
         </div>
-        {product ? <StatusBadge tone={product.is_active ? "active" : "hidden"}>{product.is_active ? "Visible" : "Oculto"}</StatusBadge> : <StatusBadge tone="hidden">Nuevo borrador</StatusBadge>}
+        {product ? <StatusBadge tone={product.is_active ? "active" : "hidden"}>{product.is_active ? "Visible" : "Oculto"}</StatusBadge> : <StatusBadge tone="active">Visible al crear</StatusBadge>}
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
@@ -71,13 +91,34 @@ export function ProductForm({
             <legend className="sr-only">Datos comerciales</legend>
             <label className="block">
               <span className="mb-2 block text-sm font-semibold">Precio</span>
-              <input name="price" defaultValue={field("price", product?.price)} className="field-control" />
-              <span className="mt-1 block text-xs text-[color:var(--muted)]">Si lo dejas vacío, la web mostrará precio a consultar.</span>
+              <input
+                name="price"
+                value={price}
+                inputMode="numeric"
+                pattern="[0-9]*"
+                aria-invalid={priceHasInvalidCharacters}
+                aria-describedby="product-price-help"
+                className={`field-control ${priceHasInvalidCharacters ? "border-[color:var(--danger)] text-[color:var(--danger)] focus-visible:outline-[color:var(--danger)]" : ""}`}
+                onChange={(event) => setPrice(event.currentTarget.value)}
+              />
+              <span id="product-price-help" className={`mt-1 block text-xs ${priceHasInvalidCharacters ? "font-semibold text-[color:var(--danger)]" : "text-[color:var(--muted)]"}`}>
+                {priceHasInvalidCharacters ? "Solo se permiten dígitos, sin letras, espacios, comas ni signos." : "Si lo dejas vacío, la web mostrará precio a consultar."}
+              </span>
             </label>
             <label className="block">
               <span className="mb-2 block text-sm font-semibold">Material</span>
-              <input name="material" defaultValue={field("material", product?.material)} className="field-control" />
+              <select value={materialMode} className="field-control" onChange={(event) => setMaterialMode(event.currentTarget.value)}>
+                <option value={DEFAULT_MATERIAL}>Acero inoxidable</option>
+                <option value={OTHER_MATERIAL}>Material distinto</option>
+              </select>
+              <input type="hidden" name="material" value={materialValue} />
             </label>
+            {materialMode === OTHER_MATERIAL ? (
+              <label className="block md:col-span-2">
+                <span className="mb-2 block text-sm font-semibold">Material distinto *</span>
+                <input value={customMaterial} onChange={(event) => setCustomMaterial(event.currentTarget.value)} className="field-control" required placeholder="Ej. Acero galvanizado" />
+              </label>
+            ) : null}
             <label className="block md:col-span-2">
               <span className="mb-2 block text-sm font-semibold">Medidas</span>
               <input name="measurements" defaultValue={field("measurements", product?.measurements)} className="field-control" />
@@ -91,11 +132,9 @@ export function ProductForm({
               <textarea name="additional_observations" defaultValue={field("additional_observations", product?.additional_observations)} rows={3} className="field-control" />
             </label>
           </fieldset>
-          {product ? (
-            <label className="mt-5 flex items-center gap-2 text-sm font-semibold">
-              <input type="checkbox" name="is_active" defaultChecked={fields ? fields.is_active === "on" : product.is_active} /> Visible en web
-            </label>
-          ) : null}
+          <label className="mt-5 flex items-center gap-2 text-sm font-semibold">
+            <input type="checkbox" name="is_active" defaultChecked={fields ? fields.is_active === "on" : (product?.is_active ?? true)} /> Visible en web
+          </label>
           <div className="mt-5 flex flex-wrap items-center gap-3">
             <SubmitButton pendingLabel={product ? "Guardando cambios" : "Creando producto"}>{product ? "Guardar cambios" : "Crear producto"}</SubmitButton>
             <Button href="/dashboard/catalogo/productos" tone="quiet">Cancelar</Button>

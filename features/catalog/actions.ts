@@ -250,7 +250,7 @@ async function saveProduct(formData: FormData, mode: "redirect" | "state"): Prom
     const { error } = await supabase.from("catalog_products").update(productPayload).eq("id", productId);
     if (error) return productFail(mode, path, error.message, formData);
   } else {
-    const insertPayload = { ...productPayload, display_order: productPayload.display_order ?? 0, publication_status: "draft", is_active: false };
+    const insertPayload = { ...productPayload, display_order: productPayload.display_order ?? 0, publication_status: productPayload.is_active ? "published" : "draft" };
     const result = await supabase.from("catalog_products").insert(insertPayload).select("id").single();
 
     if (result.error) return productFail(mode, path, result.error.message, formData);

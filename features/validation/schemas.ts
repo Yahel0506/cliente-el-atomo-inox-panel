@@ -60,7 +60,13 @@ export const productSchema = z.object({
   name: requiredString,
   category_id: z.union([z.coerce.number(), z.string()]),
   description: z.string().trim().nullable().optional(),
-  price: z.union([z.coerce.number(), z.string().trim()]).nullable().optional(),
+  price: z
+    .string()
+    .trim()
+    .regex(/^\d+$/, "El precio solo puede incluir dígitos")
+    .transform((value) => Number(value))
+    .nullable()
+    .optional(),
   measurements: z.string().trim().nullable().optional(),
   material: z.string().trim().nullable().optional(),
   internal_code: requiredString,
