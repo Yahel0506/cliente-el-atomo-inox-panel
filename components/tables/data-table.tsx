@@ -4,7 +4,7 @@ export function DataTable({
   columns,
   rows,
 }: {
-  columns: string[];
+  columns: React.ReactNode[];
   rows: React.ReactNode[][];
 }) {
   return (
@@ -13,8 +13,8 @@ export function DataTable({
         <table className="w-full min-w-[760px] border-collapse text-left text-sm">
           <thead className="bg-[color:var(--panel-raised)] text-xs font-semibold text-[color:var(--muted)]">
             <tr>
-              {columns.map((column) => (
-                <th key={column} className="border-b border-[color:var(--border)]/45 px-4 py-3 font-black">
+              {columns.map((column, columnIndex) => (
+                <th key={columnIndex} className="border-b border-[color:var(--border)]/45 px-4 py-3 font-black">
                   {column}
                 </th>
               ))}
