@@ -160,6 +160,12 @@ export async function deleteProductAction(formData: FormData) {
   const photos = await supabase.from("catalog_product_photos").select("image_src").eq("product_id", productId);
   if (photos.error) fail(path, photos.error.message);
 
+  const draftProduct = await supabase
+    .from("catalog_products")
+    .update({ is_active: false, publication_status: "draft" })
+    .eq("id", productId);
+  if (draftProduct.error) fail(path, draftProduct.error.message);
+
   const branchLinks = await supabase.from("catalog_product_branches").delete().eq("product_id", productId);
   if (branchLinks.error) fail(path, branchLinks.error.message);
 
