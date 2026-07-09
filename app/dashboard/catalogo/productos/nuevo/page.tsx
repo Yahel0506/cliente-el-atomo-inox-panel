@@ -14,7 +14,14 @@ export default async function NewProductPage({ searchParams }: { searchParams?: 
       <PageHeader
         title="Nuevo producto"
         help="Los productos nuevos se guardan visibles por defecto, siempre que tengan foto, categoría y datos completos."
-        action={<Button href="/dashboard/catalogo/productos" tone="quiet">Volver</Button>}
+        action={
+          <>
+            <Button href="/dashboard/manual#productos" tone="chrome">
+              ¿Cómo llenar este formulario?
+            </Button>
+            <Button href="/dashboard/catalogo/productos" tone="quiet">Volver</Button>
+          </>
+        }
       />
       {params?.prepared ? (
         <p className="mb-4 rounded-lg border border-[color:var(--success)]/45 bg-[color:var(--success)]/10 p-3 text-sm text-[color:var(--success)]">

@@ -53,7 +53,18 @@ export default async function ProductsPage({
   if (!data.products.length) {
     return (
       <>
-        <PageHeader title="Productos" help="Aquí se capturan las fichas que verá el cliente en el catálogo público." action={<Button href="/dashboard/catalogo/productos/nuevo" tone="primary" iconLeft={<Plus size={16} weight="bold" aria-hidden />}>Nuevo producto</Button>} />
+        <PageHeader
+          title="Productos"
+          help="Aquí se capturan las fichas que verá el cliente en el catálogo público."
+          action={
+            <>
+              <Button href="/dashboard/manual#productos" tone="chrome">
+                Ver ayuda
+              </Button>
+              <Button href="/dashboard/catalogo/productos/nuevo" tone="primary" iconLeft={<Plus size={16} weight="bold" aria-hidden />}>Nuevo producto</Button>
+            </>
+          }
+        />
         <EmptyState title="Todavía no hay productos" detail="Crea el primer producto. El panel lo guardará como borrador hasta que tenga categoría, foto y datos mínimos." actionHref="/dashboard/catalogo/productos/nuevo" actionLabel="Crear primer producto" />
       </>
     );
@@ -64,7 +75,14 @@ export default async function ProductsPage({
       <PageHeader
         title="Productos"
         help="Administra fichas del catálogo. El panel evita publicar productos incompletos."
-        action={<Button href="/dashboard/catalogo/productos/nuevo" tone="primary" iconLeft={<Plus size={16} weight="bold" aria-hidden />}>Nuevo producto</Button>}
+        action={
+          <>
+            <Button href="/dashboard/manual#productos" tone="chrome">
+              Ver ayuda
+            </Button>
+            <Button href="/dashboard/catalogo/productos/nuevo" tone="primary" iconLeft={<Plus size={16} weight="bold" aria-hidden />}>Nuevo producto</Button>
+          </>
+        }
       />
 
       <section className="mb-5 grid gap-3 sm:grid-cols-3">

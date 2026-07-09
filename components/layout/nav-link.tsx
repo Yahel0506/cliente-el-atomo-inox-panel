@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { AddressBook, Buildings, Gauge, GearSix, Images, Package, Stack } from "@phosphor-icons/react/dist/ssr";
+import { AddressBook, BookOpen, Buildings, Gauge, GearSix, Images, Package, Stack } from "@phosphor-icons/react/dist/ssr";
 import { cn } from "@/lib/utils";
 
 export const navIcons = {
@@ -13,6 +13,7 @@ export const navIcons = {
   branches: Buildings,
   works: Images,
   settings: GearSix,
+  manual: BookOpen,
 };
 
 export type NavIcon = keyof typeof navIcons;

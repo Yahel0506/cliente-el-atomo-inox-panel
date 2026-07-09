@@ -120,9 +120,14 @@ export default async function DashboardPage() {
         title="Inicio"
         help="Lectura rápida del contenido que alimenta la web pública: catálogo, sucursales, contacto y trabajos."
         action={
-          <Button href="/dashboard/catalogo/productos/nuevo" tone="primary" iconLeft={<Plus size={16} weight="bold" aria-hidden />}>
-            Nuevo producto
-          </Button>
+          <>
+            <Button href="/dashboard/manual#inicio" tone="chrome">
+              Ver ayuda
+            </Button>
+            <Button href="/dashboard/catalogo/productos/nuevo" tone="primary" iconLeft={<Plus size={16} weight="bold" aria-hidden />}>
+              Nuevo producto
+            </Button>
+          </>
         }
       />
 

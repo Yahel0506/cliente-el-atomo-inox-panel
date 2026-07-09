@@ -17,6 +17,7 @@ const nav: { href: string; label: string; icon: NavIcon }[] = [
   { href: "/dashboard/negocio/sucursales", label: "Sucursales", icon: "branches" },
   { href: "/dashboard/negocio/trabajos", label: "Trabajos", icon: "works" },
   { href: "/dashboard/ajustes", label: "Ajustes", icon: "settings" },
+  { href: "/dashboard/manual", label: "Manual del panel", icon: "manual" },
 ];
 
 export function AdminShell({ children, session }: { children: React.ReactNode; session: AdminSession }) {

@@ -13,6 +13,7 @@ import { InfoToggletip } from "@/components/disclosure/info-toggletip";
 import { ErrorMessage } from "@/components/feedback/error-message";
 import { SubmitButton } from "@/components/forms/submit-button";
 import { StatusBadge } from "@/components/ui/status-badge";
+import { Button } from "@/components/ui/button";
 import { formatPhoneLabel, toPhoneHref, toWhatsappHref } from "@/lib/formatters/business";
 import { getBusinessAdminData } from "@/features/business/data";
 import { saveContactAction } from "@/features/business/actions";
@@ -56,6 +57,11 @@ export default async function ContactPage({ searchParams }: { searchParams?: Pro
       <PageHeader
         title="Contacto global"
         help="Estos datos alimentan los botones de llamada, WhatsApp, correo y redes sociales del sitio público."
+        action={
+          <Button href="/dashboard/manual#contacto" tone="chrome">
+            Ver ayuda de contacto
+          </Button>
+        }
       />
 
       {activeCount !== 1 ? (

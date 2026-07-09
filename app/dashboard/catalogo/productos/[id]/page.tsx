@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/layout/page-header";
+import { Button } from "@/components/ui/button";
 import { SubmitButton } from "@/components/forms/submit-button";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { DisclosurePanel } from "@/components/disclosure/disclosure-panel";
@@ -25,6 +26,11 @@ export default async function EditProductPage({
       <PageHeader
         title={product.name || "Producto"}
         help="El panel protege la publicación cuando faltan categoría, foto o datos mínimos."
+        action={
+          <Button href="/dashboard/manual#productos" tone="chrome">
+            Ver ayuda de productos
+          </Button>
+        }
       />
       {query?.saved ? <p className="mb-4 rounded-md border border-[color:var(--success)]/45 bg-[color:var(--success)]/10 p-3 text-sm text-[color:var(--success)]">Cambios guardados. Puede tardar hasta 5 minutos en verse en la web pública.</p> : null}
       <div className="grid gap-6 lg:grid-cols-[1fr_360px]">

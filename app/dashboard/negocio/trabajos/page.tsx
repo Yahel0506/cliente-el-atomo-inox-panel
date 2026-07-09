@@ -131,7 +131,15 @@ export default async function WorksPage({ searchParams }: { searchParams?: Promi
 
   return (
     <>
-      <PageHeader title="Trabajos" help="Administra fotos y videos que aparecen en la sección de trabajos del sitio público." />
+      <PageHeader
+        title="Trabajos"
+        help="Administra fotos y videos que aparecen en la sección de trabajos del sitio público."
+        action={
+          <Button href="/dashboard/manual#trabajos" tone="chrome">
+            Ver ayuda de trabajos
+          </Button>
+        }
+      />
       <ErrorMessage error={params?.error} />
       {params?.saved ? <p className="mb-4 rounded-md border border-[color:var(--success)]/45 bg-[color:var(--success)]/10 p-3 text-sm text-[color:var(--success)]">Archivo guardado. Puede tardar hasta 5 minutos en verse en el sitio público.</p> : null}
 

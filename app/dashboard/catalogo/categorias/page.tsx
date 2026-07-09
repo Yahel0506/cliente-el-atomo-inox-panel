@@ -2,6 +2,7 @@ import { PageHeader } from "@/components/layout/page-header";
 import { DisclosurePanel } from "@/components/disclosure/disclosure-panel";
 import { ErrorMessage } from "@/components/feedback/error-message";
 import { DataTable } from "@/components/tables/data-table";
+import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { COMPATIBLE_CATEGORY_SLUGS, isCompatibleCategorySlug } from "@/lib/constants/catalog";
 import { formatCategoryName } from "@/lib/formatters/catalog";
@@ -16,6 +17,11 @@ export default async function CategoriesPage({ searchParams }: { searchParams?: 
       <PageHeader
         title="Categorías del catálogo"
         help="Agrupan los productos para que el cliente pueda encontrarlos fácil en el catálogo."
+        action={
+          <Button href="/dashboard/manual#categorias" tone="chrome">
+            Ver ayuda de categorías
+          </Button>
+        }
       />
 
       <ErrorMessage error={params?.error} />

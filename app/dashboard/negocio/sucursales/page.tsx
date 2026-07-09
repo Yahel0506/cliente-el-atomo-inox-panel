@@ -24,7 +24,14 @@ export default async function BranchesPage({ searchParams }: { searchParams?: Pr
       <PageHeader
         title="Sucursales"
         help="Administra direcciones, teléfonos, mapa y fachada de cada punto de venta."
-        action={<Button href="/dashboard/negocio/sucursales?new=1" tone="primary" iconLeft={<Plus size={16} weight="bold" aria-hidden />}>Nueva sucursal</Button>}
+        action={
+          <>
+            <Button href="/dashboard/manual#sucursales" tone="chrome">
+              Ver ayuda de sucursales
+            </Button>
+            <Button href="/dashboard/negocio/sucursales?new=1" tone="primary" iconLeft={<Plus size={16} weight="bold" aria-hidden />}>Nueva sucursal</Button>
+          </>
+        }
       />
       <ErrorMessage error={params?.error} />
       {params?.saved ? <p className="mb-4 rounded-md border border-[color:var(--success)]/45 bg-[color:var(--success)]/10 p-3 text-sm text-[color:var(--success)]">Sucursal guardada. Puede tardar hasta 5 minutos en verse en la web pública.</p> : null}
