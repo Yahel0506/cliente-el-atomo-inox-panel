@@ -76,13 +76,23 @@ function ManualCapture({
   description: string;
 }) {
   const [missing, setMissing] = useState(false);
+  const [isPortrait, setIsPortrait] = useState(false);
   const src = `/manual/${chapterId}/${sectionId}-${index + 1}.webp`;
 
   return (
     <figure className="mx-auto w-full max-w-5xl overflow-hidden rounded-[1rem] border border-dashed border-[color:var(--border)] bg-[color:var(--panel)] text-[color:var(--foreground)]">
       {!missing ? (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={src} alt={description} className="aspect-video w-full bg-[color:var(--surface-soft)] object-contain" onError={() => setMissing(true)} />
+        <img
+          src={src}
+          alt={description}
+          className={cn(
+            "block max-w-full bg-[color:var(--surface-soft)]",
+            isPortrait ? "h-auto max-h-[42rem] w-auto" : "h-auto w-full",
+          )}
+          onLoad={(event) => setIsPortrait(event.currentTarget.naturalHeight > event.currentTarget.naturalWidth)}
+          onError={() => setMissing(true)}
+        />
       ) : (
         <div className="flex min-h-[22rem] flex-col justify-between p-5">
           <div>
