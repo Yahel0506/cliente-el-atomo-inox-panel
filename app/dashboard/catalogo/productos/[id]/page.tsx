@@ -1,11 +1,12 @@
 import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
+import { ConfirmDeleteButton } from "@/components/forms/confirm-delete-button";
 import { SubmitButton } from "@/components/forms/submit-button";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { DisclosurePanel } from "@/components/disclosure/disclosure-panel";
 import { getCatalogAdminData, getProductDiagnostics } from "@/features/catalog/data";
-import { addRecommendedUseAction, toggleProductBranchAction } from "@/features/catalog/actions";
+import { addRecommendedUseAction, deleteRecommendedUseAction, toggleProductBranchAction } from "@/features/catalog/actions";
 import { ProductForm } from "../product-form";
 
 export default async function EditProductPage({
@@ -59,8 +60,23 @@ export default async function EditProductPage({
           </section>
           <DisclosurePanel title={`Usos recomendados (${diagnostics.uses.length})`}>
             {diagnostics.uses.length ? (
-              <ul className="list-disc pl-5">
-                {diagnostics.uses.map((use) => <li key={use.id}>{use.use_text}</li>)}
+              <ul className="space-y-2">
+                {diagnostics.uses.map((use) => (
+                  <li key={use.id} className="flex items-center justify-between gap-3 rounded-xl bg-[color:var(--panel)] px-3 py-2 shadow-[var(--shadow-control)]">
+                    <span className="min-w-0 text-sm text-[color:var(--foreground)]">{use.use_text}</span>
+                    <form action={deleteRecommendedUseAction} className="shrink-0">
+                      <input type="hidden" name="product_id" value={String(product.id)} />
+                      <input type="hidden" name="use_id" value={use.id} />
+                      <ConfirmDeleteButton
+                        compact
+                        ariaLabel={`Eliminar uso recomendado: ${use.use_text}`}
+                        title="Eliminar uso recomendado"
+                        message={`Se eliminará “${use.use_text}” de este producto. Esta acción no se puede deshacer.`}
+                        confirmLabel="Eliminar uso"
+                      />
+                    </form>
+                  </li>
+                ))}
               </ul>
             ) : (
               <p className="text-sm">Opcional. Si agregas usos, también ayudan en búsqueda.</p>

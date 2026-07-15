@@ -386,6 +386,25 @@ export async function addRecommendedUseAction(formData: FormData) {
   redirect(`${path}?saved=use`);
 }
 
+export async function deleteRecommendedUseAction(formData: FormData) {
+  await requireAdmin();
+  const supabase = await createPrivilegedClient();
+  const productId = String(formData.get("product_id") || "");
+  const useId = Number(formData.get("use_id"));
+  const path = `/dashboard/catalogo/productos/${productId}`;
+  if (!supabase) fail(path, "Falta configurar la conexión del panel.");
+  if (!productId || !Number.isInteger(useId) || useId <= 0) fail(path, "No se pudo identificar el uso recomendado.");
+
+  const { error } = await supabase
+    .from("catalog_product_recommended_uses")
+    .delete()
+    .eq("id", useId)
+    .eq("product_id", productId);
+  if (error) fail(path, error.message);
+  revalidatePath(path);
+  redirect(`${path}?saved=use-deleted`);
+}
+
 export async function toggleProductBranchAction(formData: FormData) {
   await requireAdmin();
   const supabase = await createPrivilegedClient();
