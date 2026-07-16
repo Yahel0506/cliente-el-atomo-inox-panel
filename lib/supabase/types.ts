@@ -1,3 +1,5 @@
+import type { CatalogProductModality } from "@/lib/catalog/product-modality";
+
 export type BusinessContactInfo = {
   id?: number;
   primary_call_phone: string;
@@ -55,6 +57,7 @@ export type CatalogProduct = {
   material: string | null;
   internal_code: string;
   additional_observations: string | null;
+  modality: CatalogProductModality;
   display_order: number | null;
   publication_status?: "draft" | "published" | "archived" | string;
   is_active: boolean;
