@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { formatPrice } from "@/lib/formatters/business";
 import { deleteProductAction, toggleProductAction } from "@/features/catalog/actions";
+import { formatCatalogProductModality, type CatalogProductModality } from "@/lib/catalog/product-modality";
 
 type SortKey = "name" | "price";
 type SortDirection = "asc" | "desc";
@@ -29,6 +30,7 @@ export type ProductTableRow = {
   internalCode: string;
   price: number | string | null;
   material: string | null;
+  modality: CatalogProductModality;
   isActive: boolean;
   categoryId: string | null;
   mainPhotoSrc: string | null;
@@ -41,6 +43,7 @@ export type ProductTableRow = {
 };
 
 type ProductFilters = {
+  modality: "all" | CatalogProductModality;
   material: "all" | "steel" | "other";
   visibility: "all" | "visible" | "hidden";
   categoryId: string;
@@ -51,6 +54,7 @@ type ProductFilters = {
 };
 
 const emptyFilters: ProductFilters = {
+  modality: "all",
   material: "all",
   visibility: "all",
   categoryId: "all",
@@ -74,6 +78,7 @@ function parsePrice(value: string) {
 
 function getActiveFilterCount(filters: ProductFilters) {
   return [
+    filters.modality !== "all",
     filters.material !== "all",
     filters.visibility !== "all",
     filters.categoryId !== "all",
@@ -116,6 +121,7 @@ export function ProductTableWithFilters({
     const maxPrice = parsePrice(appliedFilters.maxPrice);
 
     const filtered = products.filter((product) => {
+      if (appliedFilters.modality !== "all" && product.modality !== appliedFilters.modality) return false;
       const isSteel = normalize(product.material).includes("acero inoxidable");
       if (appliedFilters.material === "steel" && !isSteel) return false;
       if (appliedFilters.material === "other" && isSteel) return false;
@@ -267,6 +273,30 @@ export function ProductTableWithFilters({
 
                 <div className="grid gap-4 lg:grid-cols-2">
                   <fieldset className="rounded-2xl bg-[color:var(--surface)] p-3">
+                    <legend className="px-1 text-xs font-semibold text-[color:var(--muted)]">Modalidad</legend>
+                    <div className="mt-2 grid grid-cols-3 gap-1 rounded-full bg-[color:var(--panel-raised)] p-1 text-xs font-semibold shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
+                      {[
+                        ["all", "Todas"],
+                        ["sale", "Venta"],
+                        ["rental", "Renta"],
+                      ].map(([value, label]) => (
+                        <button
+                          key={value}
+                          type="button"
+                          aria-pressed={draftFilters.modality === value}
+                          onClick={() => setDraftFilters((filters) => ({ ...filters, modality: value as ProductFilters["modality"] }))}
+                          className={[
+                            "rounded-full px-3 py-2 transition-[background-color,color,box-shadow,transform] duration-160 ease-[var(--ease-out-premium)] active:scale-[0.98]",
+                            draftFilters.modality === value ? "bg-[color:var(--foreground)] text-[color:var(--background)] shadow-[var(--shadow-control)]" : "text-[color:var(--muted)] hover:text-[color:var(--foreground)]",
+                          ].join(" ")}
+                        >
+                          {label}
+                        </button>
+                      ))}
+                    </div>
+                  </fieldset>
+
+                  <fieldset className="rounded-2xl bg-[color:var(--surface)] p-3">
                     <legend className="px-1 text-xs font-semibold text-[color:var(--muted)]">Material</legend>
                     <div className="mt-2 grid grid-cols-3 gap-1 rounded-full bg-[color:var(--panel-raised)] p-1 text-xs font-semibold shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
                       {[
@@ -414,6 +444,7 @@ export function ProductTableWithFilters({
             "Foto",
             renderSortHeader("Producto", "name"),
             "Categoría",
+            "Modalidad",
             renderSortHeader("Precio", "price"),
             "Estado",
             "Fotos",
@@ -447,6 +478,9 @@ export function ProductTableWithFilters({
                 Sin categoría
               </StatusBadge>
             ),
+            <StatusBadge key="modality" tone={product.modality === "rental" ? "warning" : "hidden"}>
+              {formatCatalogProductModality(product.modality)}
+            </StatusBadge>,
             <span key="price">{formatPrice(product.price)}</span>,
             <StatusBadge key="state" tone={product.isActive ? "active" : "hidden"}>
               {product.isActive ? "Visible" : "Oculto"}

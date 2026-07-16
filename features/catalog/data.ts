@@ -35,7 +35,11 @@ export async function getCatalogAdminData(): Promise<CatalogAdminData> {
 
   const [categories, products, photos, uses, productBranches, branches] = await Promise.all([
     supabase.from("catalog_categories").select("*").order("display_order", { ascending: true }).order("id"),
-    supabase.from("catalog_products").select("*").order("display_order", { ascending: true }).order("id"),
+    supabase
+      .from("catalog_products")
+      .select("id,slug,name,category_id,description,price,measurements,material,internal_code,additional_observations,modality,display_order,publication_status,is_active")
+      .order("display_order", { ascending: true })
+      .order("id"),
     supabase.from("catalog_product_photos").select("*").order("display_order", { ascending: true }).order("id"),
     supabase.from("catalog_product_recommended_uses").select("*").order("display_order", { ascending: true }).order("id"),
     supabase.from("catalog_product_branches").select("*"),

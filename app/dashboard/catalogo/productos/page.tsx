@@ -32,6 +32,7 @@ export default async function ProductsPage({
       internalCode: product.internal_code,
       price: product.price,
       material: product.material,
+      modality: product.modality,
       isActive: product.is_active,
       categoryId: product.category_id ? String(product.category_id) : null,
       mainPhotoSrc: diagnostics.mainPhoto?.image_src ?? null,
