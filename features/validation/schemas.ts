@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { COMPATIBLE_CATEGORY_SLUGS } from "@/lib/constants/catalog";
+import { CATALOG_PRODUCT_MODALITIES } from "@/lib/catalog/product-modality";
 
 const requiredString = z.string().trim().min(1, "Campo obligatorio");
 const urlString = z.string().trim().url("Usa una URL completa");
@@ -59,6 +60,7 @@ export const productSchema = z.object({
   id: z.union([z.coerce.number(), z.string()]).optional(),
   name: requiredString,
   category_id: requiredString,
+  modality: z.enum(CATALOG_PRODUCT_MODALITIES, { error: "Selecciona una modalidad válida" }),
   description: z.string().trim().nullable().optional(),
   price: z
     .string()

@@ -10,6 +10,7 @@ import { StatusBadge } from "@/components/ui/status-badge";
 import { ImageUploadField } from "@/components/media/image-upload-field";
 import { isCompatibleCategorySlug } from "@/lib/constants/catalog";
 import { formatCategoryName } from "@/lib/formatters/catalog";
+import { isCatalogProductModality } from "@/lib/catalog/product-modality";
 
 const DEFAULT_MATERIAL = "Acero inoxidable";
 const OTHER_MATERIAL = "__other__";
@@ -31,9 +32,11 @@ export function ProductForm({
   const field = (name: keyof NonNullable<ProductFormState["fields"]>, fallback?: string | number | null) => fields?.[name] ?? String(fallback ?? "");
   const selectedCategoryId = field("category_id", product?.category_id);
   const selectedCategory = categories.find((category) => String(category.id) === selectedCategoryId);
+  const initialModality = field("modality", product?.modality ?? "sale");
   const initialPrice = field("price", product?.price);
   const [price, setPrice] = useState(initialPrice);
   const priceHasInvalidCharacters = /\D/.test(price);
+  const [modalityError, setModalityError] = useState<string | null>(null);
   const initialMaterial = field("material", product?.material) || DEFAULT_MATERIAL;
   const initialMaterialMode = useMemo(() => (initialMaterial === DEFAULT_MATERIAL ? DEFAULT_MATERIAL : OTHER_MATERIAL), [initialMaterial]);
   const [materialMode, setMaterialMode] = useState(initialMaterialMode);
@@ -46,6 +49,13 @@ export function ProductForm({
       encType="multipart/form-data"
       className="brand-surface rounded-lg p-6"
       onSubmit={(event) => {
+        const modality = new FormData(event.currentTarget).get("modality");
+        if (!isCatalogProductModality(modality)) {
+          event.preventDefault();
+          setModalityError("Selecciona Venta o Renta.");
+          event.currentTarget.querySelector<HTMLSelectElement>('select[name="modality"]')?.focus();
+          return;
+        }
         if (priceHasInvalidCharacters) {
           event.preventDefault();
           event.currentTarget.querySelector<HTMLInputElement>('input[name="price"]')?.focus();
@@ -90,6 +100,26 @@ export function ProductForm({
 
           <fieldset className="mt-6 grid gap-4 border-t border-[color:var(--border)] pt-6 md:grid-cols-2">
             <legend className="sr-only">Datos comerciales</legend>
+            <label className="block">
+              <span className="mb-2 block text-sm font-semibold">Modalidad *</span>
+              <select
+                name="modality"
+                defaultValue={initialModality}
+                required
+                aria-invalid={Boolean(modalityError)}
+                aria-describedby={modalityError ? "product-modality-error" : undefined}
+                className={`field-control ${modalityError ? "border-[color:var(--danger)] text-[color:var(--danger)] focus-visible:outline-[color:var(--danger)]" : ""}`}
+                onChange={() => setModalityError(null)}
+              >
+                <option value="sale">Venta</option>
+                <option value="rental">Renta</option>
+              </select>
+              {modalityError ? (
+                <span id="product-modality-error" className="mt-1 block text-xs font-semibold text-[color:var(--danger)]">
+                  {modalityError}
+                </span>
+              ) : null}
+            </label>
             <label className="block">
               <span className="mb-2 block text-sm font-semibold">Precio</span>
               <input

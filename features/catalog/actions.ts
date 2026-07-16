@@ -24,6 +24,7 @@ export type ProductFormFields = {
   name?: string;
   internal_code?: string;
   category_id?: string;
+  modality?: string;
   price?: string;
   material?: string;
   measurements?: string;
@@ -57,6 +58,7 @@ function getProductFormFields(formData: FormData): ProductFormFields {
     name: String(formData.get("name") || ""),
     internal_code: String(formData.get("internal_code") || ""),
     category_id: String(formData.get("category_id") || ""),
+    modality: String(formData.get("modality") || ""),
     price: String(formData.get("price") || ""),
     material: String(formData.get("material") || ""),
     measurements: String(formData.get("measurements") || ""),
@@ -234,6 +236,7 @@ async function saveProduct(formData: FormData, mode: "redirect" | "state"): Prom
     id: id || undefined,
     name: formData.get("name"),
     category_id: formData.get("category_id"),
+    modality: formData.get("modality"),
     description: formData.get("description") || null,
     price: formData.get("price") || null,
     measurements: formData.get("measurements") || null,
