@@ -8,7 +8,6 @@ import { decodeErrorParam } from "@/components/feedback/error-message";
 import { SubmitButton } from "@/components/forms/submit-button";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { ImageUploadField } from "@/components/media/image-upload-field";
-import { isCompatibleCategorySlug } from "@/lib/constants/catalog";
 import { formatCategoryName } from "@/lib/formatters/catalog";
 import { isCatalogProductModality } from "@/lib/catalog/product-modality";
 
@@ -31,7 +30,6 @@ export function ProductForm({
   const fields = state.fields;
   const field = (name: keyof NonNullable<ProductFormState["fields"]>, fallback?: string | number | null) => fields?.[name] ?? String(fallback ?? "");
   const selectedCategoryId = field("category_id", product?.category_id);
-  const selectedCategory = categories.find((category) => String(category.id) === selectedCategoryId);
   const initialModality = field("modality", product?.modality ?? "sale");
   const initialPrice = field("price", product?.price);
   const [price, setPrice] = useState(initialPrice);
@@ -170,15 +168,6 @@ export function ProductForm({
           <div className="mt-5 flex flex-wrap items-center gap-3">
             <SubmitButton pendingLabel={product ? "Guardando cambios" : "Creando producto"}>{product ? "Guardar cambios" : "Crear producto"}</SubmitButton>
             <Button href="/dashboard/catalogo/productos" tone="quiet">Cancelar</Button>
-          </div>
-          <div className="mt-5 flex flex-wrap gap-2">
-            {selectedCategory ? (
-              <StatusBadge tone={isCompatibleCategorySlug(selectedCategory.slug) ? "active" : "danger"}>
-                {isCompatibleCategorySlug(selectedCategory.slug) ? "Esta categoría funciona en catálogo" : "Esta categoría requiere ajuste"}
-              </StatusBadge>
-            ) : (
-              <StatusBadge tone="warning">Selecciona categoría para poder publicar después</StatusBadge>
-            )}
           </div>
         </div>
       </div>

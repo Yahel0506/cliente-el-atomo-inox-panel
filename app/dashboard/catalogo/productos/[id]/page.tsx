@@ -44,7 +44,6 @@ export default async function EditProductPage({
                 { label: "Nombre", ok: Boolean(product.name), optional: false },
                 { label: "Código/modelo", ok: Boolean(product.internal_code), optional: false },
                 { label: "Categoría activa", ok: Boolean(diagnostics.category?.is_active), optional: false },
-                { label: "Categoría funciona en catálogo", ok: diagnostics.categoryCompatible, optional: false },
                 { label: "Foto principal", ok: Boolean(diagnostics.mainPhoto), optional: false },
                 { label: "Imagen compatible", ok: diagnostics.imageOk, optional: false },
                 { label: "Sucursal disponible", ok: diagnostics.activeBranches.length > 0, optional: true },

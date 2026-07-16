@@ -35,7 +35,6 @@ export type ProductTableRow = {
   categoryId: string | null;
   mainPhotoSrc: string | null;
   categoryName: string | null;
-  categoryCompatible: boolean;
   productPhotosCount: number;
   activeBranchesCount: number;
   activeBranchIds: string[];
@@ -465,14 +464,7 @@ export function ProductTableWithFilters({
               <span className="text-xs text-[color:var(--muted)]">Código/modelo: {product.internalCode || "Pendiente"}</span>
             </div>,
             product.categoryName ? (
-              <span key="cat">
-                {product.categoryName}
-                <span className="mt-1 block">
-                  <StatusBadge tone={product.categoryCompatible ? "active" : "danger"}>
-                    {product.categoryCompatible ? "Funciona en catálogo" : "Requiere ajuste"}
-                  </StatusBadge>
-                </span>
-              </span>
+              <span key="cat">{product.categoryName}</span>
             ) : (
               <StatusBadge key="cat" tone="danger">
                 Sin categoría

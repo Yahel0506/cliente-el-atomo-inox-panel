@@ -99,7 +99,7 @@ export default async function DashboardPage() {
   const activeProducts = catalog.products.filter((product) => product.is_active).length;
   const hiddenProducts = totalProducts - activeProducts;
   const productsWithPhoto = diagnostics.filter((item) => item.productPhotos.length > 0).length;
-  const productsWithValidCategory = diagnostics.filter((item) => item.category && item.categoryCompatible).length;
+  const productsWithCategory = diagnostics.filter((item) => item.category).length;
   const productsWithBranch = diagnostics.filter((item) => item.activeBranches.length > 0).length;
   const publishableProducts = diagnostics.filter((item) => item.publishable).length;
   const activeBranches = business.branches.filter((branch) => branch.is_active).length;
@@ -215,7 +215,7 @@ export default async function DashboardPage() {
                 Salud para publicación
               </h3>
               <HealthRow label="Con imagen" value={productsWithPhoto} total={totalProducts} color="var(--info)" />
-              <HealthRow label="Con categoría válida" value={productsWithValidCategory} total={totalProducts} color="var(--success)" />
+              <HealthRow label="Con categoría asignada" value={productsWithCategory} total={totalProducts} color="var(--success)" />
               <HealthRow label="Con sucursal disponible" value={productsWithBranch} total={totalProducts} color={productsWithBranch === totalProducts ? "var(--success)" : "var(--accent)"} />
               <HealthRow label="Publicables" value={publishableProducts} total={totalProducts} color="var(--accent)" />
             </div>

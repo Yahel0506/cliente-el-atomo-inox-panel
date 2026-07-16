@@ -172,11 +172,10 @@ Pasos:
 
 1. Entra a Productos.
 2. Presiona "Nuevo producto".
-3. Si el panel pide preparar categorías, presiona "Preparar categorías compatibles".
-4. Llena el formulario.
-5. Agrega una imagen del producto.
-6. Revisa que la categoría sea compatible.
-7. Presiona "Crear producto".
+3. Llena el formulario.
+4. Agrega una imagen del producto.
+5. Selecciona la categoría que corresponda al producto.
+6. Presiona "Crear producto".
 
 Resultado esperado: el panel crea el producto y te envía a su pantalla de edición. Los productos nuevos se crean como borrador primero y después se publican si cumplen las condiciones necesarias.
 
@@ -185,7 +184,6 @@ Errores comunes:
 - Intentar crear sin imagen.
 - Dejar vacío el nombre, código/modelo o categoría.
 - Escribir el precio con comas, espacios o símbolos.
-- Elegir una categoría marcada como "requiere ajuste".
 
 [CAPTURA: Botón "Nuevo producto" señalado]
 [CAPTURA: Formulario de nuevo producto, señalando imagen, nombre, código/modelo, categoría y botón "Crear producto"]
@@ -283,12 +281,12 @@ Errores comunes: repetir códigos o dejarlo como texto genérico.
 
 Qué es: grupo del catálogo al que pertenece el producto.  
 Obligatorio: sí.  
-Cómo llenarlo: elige una categoría activa y compatible.  
-Ejemplo correcto: Carros, mesas, campanas o una categoría compatible del panel.  
-Errores comunes: seleccionar una categoría marcada como "requiere ajuste".  
+Cómo llenarlo: elige la categoría que corresponda al producto.
+Ejemplo correcto: Carros, mesas o campanas, según el producto.
+Errores comunes: seleccionar una categoría que no corresponde al producto.
 Notas: afecta cómo aparece el producto en el catálogo público.
 
-[CAPTURA: Selector "Categoría" y estado de compatibilidad señalados]
+[CAPTURA: Selector "Categoría" señalado]
 
 #### Campo: Precio
 
@@ -387,26 +385,24 @@ Resultado esperado: el botón cambia entre "Disponible" y "Agregar".
 
 ### 4.1 ¿Para qué sirve esta sección?
 
-Categorías muestra los grupos disponibles para clasificar productos. En esta versión del panel funciona como revisión y diagnóstico: permite ver estado, compatibilidad con catálogo público y cantidad de productos por categoría.
+Categorías muestra los grupos disponibles para clasificar productos, su estado y la cantidad de productos asociados a cada una.
 
 [CAPTURA: Página "Categorías del catálogo" completa]
 
-### 4.2 Revisar categorías compatibles
+### 4.2 Consultar categorías
 
-Objetivo: saber qué categorías funcionan correctamente en el catálogo público.
+Objetivo: revisar las categorías disponibles para clasificar productos.
 
-Cuándo usarlo: cuando un producto aparece con advertencia de categoría.
+Cuándo usarlo: cuando quieres revisar las categorías registradas o sus productos relacionados.
 
 Pasos:
 
 1. Entra a Categorías.
-2. Revisa la columna "Catálogo público".
-3. Abre "Tipos compatibles del catálogo" para consultar los slugs compatibles.
+2. Revisa el estado y el conteo de productos de cada categoría.
 
-Resultado esperado: identificas si una categoría puede usarse sin ajuste.
+Resultado esperado: identificas las categorías disponibles para organizar productos.
 
-[CAPTURA: Tabla de categorías señalando columna "Catálogo público"]
-[CAPTURA: Panel "Tipos compatibles del catálogo" abierto]
+[CAPTURA: Tabla de categorías señalando estado y conteo de productos]
 
 ## 5. Contacto global
 
@@ -762,7 +758,7 @@ Notas: no aparece en videos de proceso porque esos se mantienen activos automát
 - Usa nombres claros y descriptivos.
 - Mantén un mismo formato para códigos o modelos.
 - Usa imágenes nítidas y relacionadas con el producto correcto.
-- Evita publicar productos sin categoría compatible.
+- Asigna a cada producto la categoría que mejor le corresponda.
 - Revisa el dashboard después de hacer cambios importantes.
 - Relaciona productos con sucursales cuando la disponibilidad sea relevante.
 - Usa el campo de observaciones para detalles de cotización, no para reemplazar la descripción.
@@ -772,7 +768,7 @@ Notas: no aparece en videos de proceso porque esos se mantienen activos automát
 
 ### Un producto no se puede activar
 
-Revisa el checklist de publicación. Normalmente falta imagen, categoría compatible, nombre, código/modelo o algún dato mínimo.
+Revisa el checklist de publicación. Normalmente falta imagen, categoría, nombre, código/modelo o algún dato mínimo.
 
 [CAPTURA: Checklist de publicación mostrando un elemento en "Falta"]
 
@@ -811,7 +807,6 @@ Revisa que sea del tipo correcto, que el video no exceda 60 segundos y que pueda
 **Visible en web:** elemento que puede mostrarse en el sitio público.  
 **Oculto:** elemento guardado en el panel, pero no visible públicamente.  
 **Publicable:** producto que cumple las condiciones para mostrarse correctamente.  
-**Categoría compatible:** categoría que el catálogo público reconoce y puede mostrar bien.  
 **Alt text:** descripción breve de una imagen o video para accesibilidad y contexto.  
 **Orden:** número que define qué elemento aparece primero.  
 **WebP:** formato optimizado para imágenes.  
@@ -867,8 +862,6 @@ No necesitas tocar código para insertar una captura en la guía web: abre `/das
 - [CAPTURA: Campo "Nombre del producto" lleno con ejemplo correcto]
 - [CAPTURA: Campo "Código o modelo" señalado]
 - [CAPTURA: Selector "Categoría" abierto]
-- [CAPTURA: Badge "Esta categoría funciona en catálogo" señalado]
-- [CAPTURA: Badge "Esta categoría requiere ajuste" señalado]
 - [CAPTURA: Campo "Precio" vacío con texto de ayuda]
 - [CAPTURA: Campo "Precio" con ejemplo correcto]
 - [CAPTURA: Campo "Precio" mostrando error por caracteres inválidos]
@@ -888,9 +881,7 @@ No necesitas tocar código para insertar una captura en la guía web: abre `/das
 
 - [CAPTURA: Tabla de categorías completa]
 - [CAPTURA: Columna "Estado", señalando categoría activa y oculta]
-- [CAPTURA: Columna "Catálogo público", señalando "Funciona" y "Requiere ajuste"]
 - [CAPTURA: Columna "Productos", señalando conteo por categoría]
-- [CAPTURA: Panel "Tipos compatibles del catálogo" abierto]
 
 ### 11.4 Capturas de Contacto
 

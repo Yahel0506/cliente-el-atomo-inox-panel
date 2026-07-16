@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { COMPATIBLE_CATEGORY_SLUGS } from "@/lib/constants/catalog";
 import { CATALOG_PRODUCT_MODALITIES } from "@/lib/catalog/product-modality";
 
 const requiredString = z.string().trim().min(1, "Campo obligatorio");
@@ -44,16 +43,6 @@ export const categorySchema = z.object({
   description: z.string().trim().optional(),
   display_order: z.coerce.number().int().optional(),
   is_active: z.coerce.boolean().default(false),
-  confirm_incompatible: z.coerce.boolean().optional(),
-}).superRefine((value, ctx) => {
-  const compatible = COMPATIBLE_CATEGORY_SLUGS.includes(value.slug as never);
-  if (value.is_active && !compatible && !value.confirm_incompatible) {
-    ctx.addIssue({
-      code: "custom",
-      path: ["slug"],
-      message: "Esta categoría requiere confirmación antes de activarla",
-    });
-  }
 });
 
 export const productSchema = z.object({

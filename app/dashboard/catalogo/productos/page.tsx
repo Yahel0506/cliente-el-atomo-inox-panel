@@ -37,7 +37,6 @@ export default async function ProductsPage({
       categoryId: product.category_id ? String(product.category_id) : null,
       mainPhotoSrc: diagnostics.mainPhoto?.image_src ?? null,
       categoryName: diagnostics.category ? diagnostics.category.name || formatCategoryName(diagnostics.category.slug) : null,
-      categoryCompatible: diagnostics.categoryCompatible,
       productPhotosCount: diagnostics.productPhotos.length,
       activeBranchesCount: diagnostics.activeBranches.length,
       activeBranchIds: diagnostics.activeBranches.map((row) => String(row.branch_id)),

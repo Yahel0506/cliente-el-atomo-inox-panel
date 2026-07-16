@@ -1,5 +1,4 @@
 import { createPrivilegedClient } from "@/lib/supabase/admin";
-import { isCompatibleCategorySlug } from "@/lib/constants/catalog";
 import { getSupabaseEnv } from "@/lib/supabase/env";
 import { isPublicStorageUrl } from "@/lib/formatters/business";
 import type {
@@ -66,12 +65,10 @@ export function getProductDiagnostics(product: CatalogProduct, data: CatalogAdmi
   const mainPhoto = productPhotos[0];
   const env = getSupabaseEnv();
   const imageOk = mainPhoto ? isPublicStorageUrl(mainPhoto.image_src, env.url) : false;
-  const categoryCompatible = isCompatibleCategorySlug(category?.slug);
   const warnings = [
     !product.name ? "Sin nombre" : null,
     !product.internal_code ? "Sin código/modelo" : null,
     !category ? "Sin categoría activa" : null,
-    category && !categoryCompatible ? "Categoría requiere ajuste" : null,
     productPhotos.length === 0 ? "Sin foto" : null,
     mainPhoto && !imageOk ? "Foto incompatible" : null,
   ].filter(Boolean) as string[];
@@ -86,7 +83,6 @@ export function getProductDiagnostics(product: CatalogProduct, data: CatalogAdmi
     activeBranches,
     mainPhoto,
     imageOk,
-    categoryCompatible,
     publishable: warnings.length === 0,
     warnings,
     advisoryWarnings,

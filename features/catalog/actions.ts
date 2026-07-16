@@ -2,7 +2,6 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { COMPATIBLE_CATEGORY_SLUGS, isCompatibleCategorySlug } from "@/lib/constants/catalog";
 import { requireAdmin } from "@/lib/permissions/admin";
 import { createPrivilegedClient } from "@/lib/supabase/admin";
 import { categorySchema, productSchema } from "@/features/validation/schemas";
@@ -199,14 +198,10 @@ export async function saveCategoryAction(formData: FormData) {
     description: formData.get("description") || undefined,
     display_order: formData.get("display_order") || 0,
     is_active: formData.get("is_active") === "on",
-    confirm_incompatible: formData.get("confirm_incompatible") === "on",
   });
   if (!parsed.success) fail(path, parsed.error.issues[0]?.message || "Categoría inválida.");
 
-  const { id, confirm_incompatible: _confirm, ...payload } = parsed.data;
-  if (payload.is_active && !isCompatibleCategorySlug(payload.slug) && !_confirm) {
-    fail(path, "Confirma esta categoría antes de activarla.");
-  }
+  const { id, ...payload } = parsed.data;
 
   const result = id
     ? await supabase.from("catalog_categories").update(payload).eq("id", id)
@@ -303,33 +298,6 @@ async function saveProduct(formData: FormData, mode: "redirect" | "state"): Prom
 
   revalidatePath("/dashboard/catalogo/productos");
   redirect(nextId ? `/dashboard/catalogo/productos/${nextId}?saved=1` : "/dashboard/catalogo/productos?saved=1");
-}
-
-export async function createMissingCompatibleCategoriesAction() {
-  await requireAdmin();
-  const supabase = await createPrivilegedClient();
-  const path = "/dashboard/catalogo/productos/nuevo";
-  if (!supabase) fail(path, "Falta configurar la conexión del panel.");
-
-  const existing = await supabase.from("catalog_categories").select("slug");
-  if (existing.error) fail(path, existing.error.message);
-
-  const existingSlugs = new Set((existing.data ?? []).map((category) => category.slug));
-  const missing = COMPATIBLE_CATEGORY_SLUGS.filter((slug) => !existingSlugs.has(slug)).map((slug, index) => ({
-    slug,
-    name: formatCategoryName(slug),
-    display_order: index,
-    is_active: true,
-  }));
-
-  if (missing.length) {
-    const { error } = await supabase.from("catalog_categories").insert(missing);
-    if (error) fail(path, error.message);
-  }
-
-  revalidatePath("/dashboard/catalogo/productos/nuevo");
-  revalidatePath("/dashboard/catalogo/categorias");
-  redirect(`${path}?prepared=1`);
 }
 
 export async function addProductPhotoAction(formData: FormData) {
